@@ -1,4 +1,8 @@
+"use strict";
+
 var request = require("request");
+var async = require("async");
+var fs = require("fs");
 
 function Lastfm(){}
 Lastfm.apiKey = "200ef837557217e186dd2eed9a6075b8";
@@ -26,7 +30,9 @@ Lastfm.grabWeeks = function (callback) {
             callback(weeks);
         }
         catch (e) {
-            console.log("JSON parse failed");
+            console.log("grab weeks error");
+            console.log(e);
+            //console.log("JSON parse failed");
         }
     });
 };
@@ -49,6 +55,7 @@ Lastfm.getTracks = function (to, from, callback) {
             callback(body);
         }
         catch (e) {
+            console.log("get tracks error");
             console.log(e);
         }
     });
@@ -67,7 +74,7 @@ Lastfm.updateDbFiles = function updateDbFiles(callback){
                 setTimeout(function(){
                     console.log("getting week " + fromdate  + " ... " + todate);
                     Lastfm.getTracks(item.to, item.from, function(topTracks){
-                        fs.writeFile("database/"+from+".json", topTracks, next);
+                        fs.writeFile("database/"+item.from+".json", topTracks, next);
                     });
                 },
                 1500);

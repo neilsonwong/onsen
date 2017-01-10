@@ -1,3 +1,4 @@
+"use strict";
 var alias = require("./alias");
 
 function LastFmDataFixer(){
@@ -12,7 +13,7 @@ LastFmDataFixer.aggregateWeeklyTracks = function aggregateWeeklyTracks (db, call
     }
 
     let trackHashMap = {};
-    let i, song, artist, title, playCount;
+    let i, song, artist, title, playCount, tempKey;
 
     for (i = 0; i < db.track.length; ++i){
         song = db.track[i];
@@ -56,11 +57,12 @@ LastFmDataFixer.buildSongBook = function buildSongBook(db3){
     let songs = {};
     let playable = {};
     let topsong = {};
+	let i, len, song;
 
     //build song archive
     for (var week in db3) {
         if (db3.hasOwnProperty(week)) { 
-            let len = db3[week].tracks.length;
+            len = db3[week].tracks.length;
             for (i = 0; i < len; ++i){
                 song = db3[week].tracks[i];
                 if (songs[song.artist] === undefined){

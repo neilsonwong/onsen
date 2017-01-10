@@ -1,3 +1,5 @@
+"use strict";
+
 var async = require("async");
 var fs = require("fs");
 var lastfm = require("./lastfm");
@@ -42,4 +44,5 @@ function generateFixedLastfmDb() {
         });
     });
 }
-generateFixedLastfmDb();
+
+lastfm.updateDbFiles(generateFixedLastfmDb);

@@ -1,3 +1,5 @@
+"use strict";
+
 function Alias (){}
 
 Alias.title = function(raw){
