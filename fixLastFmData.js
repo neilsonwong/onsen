@@ -1,9 +1,7 @@
 "use strict";
 var alias = require("./alias");
 
-function LastFmDataFixer(){
-
-}
+function LastFmDataFixer(){}
 
 LastFmDataFixer.aggregateWeeklyTracks = function aggregateWeeklyTracks (db, callback){
     let week = {
@@ -70,6 +68,7 @@ LastFmDataFixer.buildSongBook = function buildSongBook(db3){
                 }
 
                 if (songs[song.artist][song.title] === undefined){
+                    song.weeksAtTop = 0;
                     songs[song.artist][song.title] = song;
                 }
                 else {
@@ -85,6 +84,7 @@ LastFmDataFixer.buildSongBook = function buildSongBook(db3){
                     if (playable[song.artist] === undefined){
                         playable[song.artist] = {};
                     }
+                    ++songs[song.artist][song.title].weeksAtTop;
                 }
 
                 //top song
