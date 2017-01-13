@@ -1,4 +1,5 @@
 "use strict";
+
 var alias = require("./alias");
 
 function LastFmDataFixer(){}
@@ -47,7 +48,7 @@ LastFmDataFixer.aggregateWeeklyTracks = function aggregateWeeklyTracks (db, call
     });
 
     if (callback) {
-        callback(week);
+        return callback(week);
     }
 }
 
