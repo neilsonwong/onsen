@@ -1,5 +1,6 @@
 let execFile = require('child_process').execFile;
 let async = require("async");
+let id3 = require('id3js');
 
 function splitMp3(inputFile, duration, outputFile, callback) {
     //overload
@@ -24,7 +25,7 @@ function splitMp3(inputFile, duration, outputFile, callback) {
 
 function AudioHelper(){}
 
-AudioProcessor.sliceAndDice(minlength ,callback){
+AudioProcessor.sliceAndDice = function(minlength ,callback){
     let audioFolderPath = "mp3";
     let outputFolderPath = "cut_mp3";
     let playable;
@@ -82,6 +83,14 @@ AudioProcessor.sliceAndDice(minlength ,callback){
             return callback();
         }
     });
-}
+};
+
+AudioHelper.imHalping = function(directories){
+    let playable = require("./playable");
+
+    //bitrate
+    //path
+
+};
 
 module.exports = AudioHelper;
