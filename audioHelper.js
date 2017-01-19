@@ -1,6 +1,5 @@
 let execFile = require('child_process').execFile;
 let async = require("async");
-let id3 = require('id3js');
 
 function splitMp3(inputFile, duration, outputFile, callback) {
     //overload
@@ -24,6 +23,7 @@ function splitMp3(inputFile, duration, outputFile, callback) {
 }
 
 function AudioHelper(){}
+function AudioProcessor(){}
 
 AudioProcessor.sliceAndDice = function(minlength ,callback){
     let audioFolderPath = "mp3";
@@ -85,12 +85,47 @@ AudioProcessor.sliceAndDice = function(minlength ,callback){
     });
 };
 
-AudioHelper.imHalping = function(directories){
+AudioHelper.imHalping = function(dir){
     let playable = require("./playable");
+    
 
-    //bitrate
-    //path
+    grabFileMetaData(dir, function(data){
+        //loop through and throw into a big catalogue
+    });
+
+    /*
+    {
+        album
+        artist
+        AudioBitrate
+        SourceFile
+    }
+    */
 
 };
+
+function grabFileMetaData(dir, callback){
+    var metaData = {};
+
+    //exiftool -artist -album -"AudioBitrate" -j a.mp3
+    //exiftool -artist -album -AudioBitrate -j -charset utf8 -if "$FileType eq 'MP3'" "G:\Music"
+    execFile("exiftool", ["-artist", "-album", "-AudioBitrate", "-charset", "utf8", "-if \"$FileType eq 'MP3'\"", "-j" , "-r", dir], function(error, stdout, stderr) {
+        if (error){
+            console.log(error);
+        }
+        else {
+            try {
+                metaData = JSON.parse(stdout);
+            }
+            catch(e){
+                console.err(e);
+            }
+        }
+
+        if (callback){
+            return callback(metaData);
+        }
+    });
+}
 
 module.exports = AudioHelper;
