@@ -1,3 +1,5 @@
+"use strict";
+
 let execFile = require('child_process').execFile;
 let async = require("async");
 let alias = require("./alias");
@@ -87,13 +89,12 @@ AudioProcessor.sliceAndDice = function(minlength ,callback){
     });
 };
 
-AudioHelper.imHalping = function(dirs, callback){
+AudioHelper.generateCatalogue = function(dirs, callback){
     //handle non arrays
     if (!Array.isArray(dirs)){
         dirs = [dirs];
     }
 
-    let playable = require("./playable");
     let catalogue = {};
     
     async.each(dirs, function(dir, done){
@@ -105,10 +106,10 @@ AudioHelper.imHalping = function(dirs, callback){
                 //i am lazy
                 //so for now skip songs with incomplete artist, title
 
-                artist = alias.title(data[i].Artist);
+                artist = alias.artist(data[i].Artist);
                 title = alias.title(data[i].Title);
 
-                if (artist == null || title == null){
+                if (artist === null || title === null){
                     continue;
                 }
 
@@ -134,7 +135,7 @@ AudioHelper.imHalping = function(dirs, callback){
     },
     function done(){
         console.log("done cataloguing, writing catalogue");
-        fs.writeFile("catalogue.json", JSON.stringify(catalogue), function(){
+        fs.writeFile("catalogue.json", JSON.stringify(catalogue, null, 2), function(){
             console.log("catalogue written");
             if (callback){
                 return callback();
@@ -171,7 +172,10 @@ function grabFileMetaData(dir, callback){
 
     //exiftool -artist -album -"AudioBitrate" -j a.mp3
     //exiftool -artist -album -AudioBitrate -j -charset utf8 -if "$FileType eq 'MP3'" "G:/Music"
-    execFile("exiftool", ["-Artist", "-Album", "-Title", "-AudioBitrate", "-ext", "mp3", "-ext", "m4a", "-charset", "utf8", "-j", "-r", dir], function(error, stdout, stderr) {
+    execFile("exiftool", ["-Artist", "-Album", "-Title", "-AudioBitrate", "-ext", "mp3", "-ext", "m4a", "-charset", "utf8", "-j", "-r", dir], 
+        { maxBuffer: 10000000 }, 
+        function(error, stdout, stderr) {
+
         if (error){
             console.log(error);
         }
@@ -190,4 +194,49 @@ function grabFileMetaData(dir, callback){
     });
 }
 
+
+AudioHelper.mergeMetadata = function(callback){
+    let playable = require("./playable");
+    let catalogue = require("./catalogue");
+    let artist, song, aArtist, aSong;
+    let addedSource = 0;
+    let totalSongs = 0;
+
+    for (artist in playable){
+        aArtist = alias.artist(artist);
+        for (song in playable[artist]){
+            aSong = alias.title(song);
+            ++totalSongs;
+            if (catalogue[aArtist] !== undefined && 
+                catalogue[aArtist][aSong] !== undefined){
+                    ++addedSource;
+                    //merge the data together, we want to grab
+                    //Album
+                    //AudioBitrate
+                    //SourceFile 
+                    playable[artist][song].album = catalogue[aArtist][aSong].Album;
+                    playable[artist][song].audioBitrate = catalogue[aArtist][aSong].AudioBitrate;
+                    playable[artist][song].sourceFile = catalogue[aArtist][aSong].SourceFile;
+            }
+            else {
+                //doesn't exist, add blank entries
+                playable[artist][song].album = null;
+                playable[artist][song].audioBitrate = null;
+                playable[artist][song].sourceFile = null;
+
+                console.log("missing file: " + aArtist + " - " + aSong);
+            }
+        }
+    }
+
+    //write new playable
+    fs.writeFile("playable.json", JSON.stringify(playable, null, 2), function(){
+        console.log("playable written");
+        console.log("added: " + addedSource);
+        console.log("total: " + totalSongs);
+        if (callback){
+            return callback();
+        }
+    });
+}
 module.exports = AudioHelper;
