@@ -1,6 +1,6 @@
 "use strict";
 
-var alias = require("./alias");
+let alias = require("./alias");
 
 function LastFmDataFixer(){}
 

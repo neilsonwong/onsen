@@ -7,4 +7,4 @@ var audioHelper = require("./audioHelper");
 //     console.log(success ? "yay" : "nay");
 // });
 
-audioHelper.imHalping("G:/Music/japanese/Ayaka");
+audioHelper.imHalping("G:/Music");

@@ -3,24 +3,25 @@
 function Alias (){}
 
 Alias.title = function(raw){
-    let lRaw = raw.toLowerCase();
-    if (Alias.db.title[lRaw] !== undefined){
-        return Alias.db.title[lRaw];
-    }
-    else {
-        return raw;
-    }
+	return doDaWork(raw, "title");
 };
 
 Alias.artist = function(raw){
+	return doDaWork(raw, "artist");
+};
+
+function doDaWork(raw, prop){
+	if (!raw){
+		return null;
+	}
     let lRaw = raw.toLowerCase();
-    if (Alias.db.artist[lRaw] !== undefined){
-        return Alias.db.artist[lRaw];
+	if (Alias.db[prop][lRaw] !== undefined){
+		return Alias.db[prop][lRaw];
     }
     else {
         return raw;
     }
-};
+}
 
 Alias.db = {};
 

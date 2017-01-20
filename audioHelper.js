@@ -1,5 +1,7 @@
 let execFile = require('child_process').execFile;
 let async = require("async");
+let alias = require("./alias");
+let fs = require("fs");
 
 function splitMp3(inputFile, duration, outputFile, callback) {
     //overload
@@ -85,18 +87,66 @@ AudioProcessor.sliceAndDice = function(minlength ,callback){
     });
 };
 
-AudioHelper.imHalping = function(dir){
-    let playable = require("./playable");
-    
+AudioHelper.imHalping = function(dirs, callback){
+    //handle non arrays
+    if (!Array.isArray(dirs)){
+        dirs = [dirs];
+    }
 
-    grabFileMetaData(dir, function(data){
-        //loop through and throw into a big catalogue
+    let playable = require("./playable");
+    let catalogue = {};
+    
+    async.each(dirs, function(dir, done){
+        //run exiftool and recursively grab mp3 metadata from dir
+        grabFileMetaData(dir, function(data){
+            //loop through and throw into a big catalogue
+            let i, artist, title;
+            for (i = 0; i < data.length; ++i){
+                //i am lazy
+                //so for now skip songs with incomplete artist, title
+
+                artist = alias.title(data[i].Artist);
+                title = alias.title(data[i].Title);
+
+                if (artist == null || title == null){
+                    continue;
+                }
+
+                //create the artist entry
+                if (catalogue[artist] === undefined){
+                    catalogue[artist] = {};
+                }
+
+                //add the song
+                if (catalogue[artist][title] === undefined){
+                    catalogue[artist][title] = data[i];
+                }
+                else {
+                    //we already have a version of this song
+                    if (compareBitrate(data[i], catalogue[artist][title])){
+                        //the new one has a higher bitrate, we will use that instead
+                        catalogue[artist][title] = data[i];
+                    }
+                }
+            }
+            return done();
+        });
+    },
+    function done(){
+        console.log("done cataloguing, writing catalogue");
+        fs.writeFile("catalogue.json", JSON.stringify(catalogue), function(){
+            console.log("catalogue written");
+            if (callback){
+                return callback();
+            }
+        });
     });
 
     /*
     {
-        album
-        artist
+        Album
+        Artist
+        Title
         AudioBitrate
         SourceFile
     }
@@ -104,12 +154,24 @@ AudioHelper.imHalping = function(dir){
 
 };
 
+function compareBitrate(a, b){
+    try {
+        let a_br = parseInt(a.AudioBitrate.replace("kbps", "").trim());
+        let b_br = parseInt(a.AudioBitrate.replace("kbps", "").trim());
+        return a_br > b_br;
+    }
+    catch (e){
+
+    }
+    return false;
+}
+
 function grabFileMetaData(dir, callback){
     var metaData = {};
 
     //exiftool -artist -album -"AudioBitrate" -j a.mp3
-    //exiftool -artist -album -AudioBitrate -j -charset utf8 -if "$FileType eq 'MP3'" "G:\Music"
-    execFile("exiftool", ["-artist", "-album", "-AudioBitrate", "-charset", "utf8", "-if \"$FileType eq 'MP3'\"", "-j" , "-r", dir], function(error, stdout, stderr) {
+    //exiftool -artist -album -AudioBitrate -j -charset utf8 -if "$FileType eq 'MP3'" "G:/Music"
+    execFile("exiftool", ["-Artist", "-Album", "-Title", "-AudioBitrate", "-ext", "mp3", "-ext", "m4a", "-charset", "utf8", "-j", "-r", dir], function(error, stdout, stderr) {
         if (error){
             console.log(error);
         }
