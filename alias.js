@@ -14,6 +14,7 @@ function doDaWork(raw, prop){
 	if (!raw){
 		return null;
 	}
+	raw = raw.trim();
     let lRaw = raw.toLowerCase();
 	if (Alias.db[prop][lRaw] !== undefined){
 		return Alias.db[prop][lRaw];
@@ -50,14 +51,42 @@ Alias.db.title = {
     "rune ga pika to hikattara" : "ルンがピカッと光ったら",
     "ルンがピカッと光ったら～album version～" : "ルンがピカッと光ったら",
 
-	"웨딩드레스 (Wedding Dress)" : "웨딩드레스",
-	"Wedding Dress" : "웨딩드레스"
+	"웨딩드레스 (wedding dress)" : "웨딩드레스",
+	"wedding dress" : "웨딩드레스",
+
+	"one's hope" : "ONE's hope",
+
+	"ur-style" : "Ur-Style", 
+	
+	"heaven" : "Heaven",
+
+	"orange days" : "Orange Days",
+
+	"lull ~soshite bokura wa~" : "lull ～そして僕らは～",
+
+    "sekai wa koi ni ochiteiru": "世界は恋に落ちている",
+
+    "02.over the clouds" : "Over the clouds",
+
+    "shake it!": "shake it!",
+
+    "i wish -tri.version-": "I Wish -tri.version-",
+
+	"blue" : "blue",
+	
+    "love marginal (honoka mix)": "Love marginal",
+
+    "for you ~tsuki no hikari ga furisosogu terrace" : "For you ~Tsuki no Hikari ga Furisosogu Terrace~",
+
+    "todokanai koi '13" : "Todokanai Koi '13",
 };
 
 Alias.db.artist = {
 	"park bom" : "박봄",
 
 	"ayaka" : "絢香",
+
+	"alan" : "alan",
 
 	"yuna itou" : "伊藤由奈",
 	"reira starring yuna ito" : "伊藤由奈",
@@ -111,8 +140,10 @@ Alias.db.artist = {
 	"mami kawada" : "川田まみ",
 
 	"miura sally" : "三浦サリー",
+	"sally miura" : "三浦サリー",
 
 	"masami okui" : "奥井雅美",
+    "okui masami": "奥井雅美",
 
 	"kara" : "카라",
 
@@ -137,7 +168,7 @@ Alias.db.artist = {
 
 	"tamura yukari" : "田村ゆかり",
 
-	"angela aki" : "アンジェラ・アキ",
+	"angela aki" : "アンジェラアキ",
 
 	"kiyoura natsumi" : "清浦夏実",
 
@@ -165,13 +196,39 @@ Alias.db.artist = {
 
 	"fukui mai" : "福井舞",
 
+	"fhana" : "fhána",
+
 	"kousaka honoka" : "新田恵海",
 	"emi nitta" : "新田恵海",
 	"nitta emi" : "新田恵海",
+	//not a real alias
+	"printemps" : "新田恵海",
+
+    "bibi" : "BiBi",
 
 	"aikawa nanase" : "相川七瀬",
 
-	"Wei Chen ft MBLAQ Lee Joon & Thunder" : "웨이천 & 이준(MBLAQ) & 천둥(MBLAQ)"
+	"wei chen ft mblaq lee joon & thunder" : "웨이천 & 이준(MBLAQ) & 천둥(MBLAQ)",
+
+	"home made kazoku" : "HOME MADE 家族",
+
+	"supercell": "supercell",
+
+	"chelly": "EGOIST",
+	"egoist": "EGOIST",
+
+	"earthmind": "earthmind",
+
+	"bigbang" : "빅뱅",
+	"big bang" : "빅뱅",
+
+	"komatsu mikako" : "小松未可子",
+
+	"himawari" : "向日葵",
+
+  	"aim": "AiM",
+
+  	"taeyang": "태양",
 };
 
 module.exports = Alias;
