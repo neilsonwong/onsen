@@ -101,14 +101,15 @@ AudioHelper.generateCatalogue = function(dirs, callback){
         //run exiftool and recursively grab mp3 metadata from dir
         grabFileMetaData(dir, function(data){
             //loop through and throw into a big catalogue
-            let i, artist, title;
+            let i, artist, title, aliasTemp;
             for (i = 0; i < data.length; ++i){
                 //i am lazy
                 //so for now skip songs with incomplete artist, title
 
-                artist = alias.artist(data[i].Artist);
-                title = alias.title(data[i].Title);
-
+                aliasTemp = alias.get(data[i].Artist, data[i].Title);
+                artist = aliasTemp[0];
+                title = aliasTemp[1];
+                
                 if (artist === null || title === null){
                     continue;
                 }
@@ -235,7 +236,8 @@ AudioHelper.mergeMetadata = function(callback){
         console.log("added: " + addedSource);
         console.log("total: " + totalSongs);
         if (callback){
-            return callback();
+            let error = (totalSongs - addedSource) == 0 ? null : "error: please ensure all files have paths";
+            return callback(error);
         }
     });
 }

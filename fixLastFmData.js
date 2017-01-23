@@ -12,12 +12,13 @@ LastFmDataFixer.aggregateWeeklyTracks = function aggregateWeeklyTracks (db, call
     }
 
     let trackHashMap = {};
-    let i, song, artist, title, playCount, tempKey;
+    let i, song, artist, title, playCount, tempKey, aliasTemp;
 
     for (i = 0; i < db.track.length; ++i){
         song = db.track[i];
-        title = alias.title(song.name);
-        artist = alias.artist(song.artist["#text"]);
+        aliasTemp = alias.get(song.artist["#text"], song.name);
+        artist = aliasTemp[0];
+        title = aliasTemp[1];
         tempKey = artist + "-" + title;
         playCount = parseInt(song.playcount);
 
