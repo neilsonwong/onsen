@@ -2,6 +2,13 @@
 
 function Alias (){}
 
+Alias.get = function(rawArtist, rawTitle){
+	return Alias.special(
+		Alias.artist(rawArtist),
+		Alias.title(rawTitle)
+	);
+};
+
 Alias.title = function(raw){
 	return doDaWork(raw, "title");
 };
@@ -9,6 +16,18 @@ Alias.title = function(raw){
 Alias.artist = function(raw){
 	return doDaWork(raw, "artist");
 };
+
+Alias.special = function(artist, title){
+	let a = artist;
+	let t = title;
+	
+	if (Alias.db.special[artist] && Alias.db.special[artist][title]){
+		a = Alias.db.special[artist][title].artist;
+		t = Alias.db.special[artist][title].title;
+	}
+
+	return [a, t];
+}
 
 function doDaWork(raw, prop){
 	if (!raw){
@@ -201,8 +220,6 @@ Alias.db.artist = {
 	"kousaka honoka" : "新田恵海",
 	"emi nitta" : "新田恵海",
 	"nitta emi" : "新田恵海",
-	//not a real alias
-	"printemps" : "新田恵海",
 
     "bibi" : "BiBi",
 
@@ -229,6 +246,15 @@ Alias.db.artist = {
   	"aim": "AiM",
 
   	"taeyang": "태양",
+};
+
+Alias.db.special = {
+	"Printemps" : {
+		"Love marginal" : {
+			artist: "新田恵海",
+			title: "Love marginal"
+		}
+	}
 };
 
 module.exports = Alias;
