@@ -66,9 +66,15 @@ Alias.db.title = {
     "yakusoku wo shiyou" : "約束をしよう",
 
     "ikenai borderline" : "いけないボーダーライン",
+	"ikenai border line ～album version～" : "いけないボーダーライン",
     "いけないボーダーライン～album version～" : "いけないボーダーライン",
     "rune ga pika to hikattara" : "ルンがピカッと光ったら",
+	"rune ga pika to hikattara ～album version～" : "ルンがピカッと光ったら",
+	"rune ga pikatto hikattara～album version～" :  "ルンがピカッと光ったら",
     "ルンがピカッと光ったら～album version～" : "ルンがピカッと光ったら",
+	"bokura no senjou" : "僕らの戦場",
+	"axia~daisuki de daikirai~" : "AXIA～ダイスキでダイキライ～",
+	"axia～daisuki de daikirai～" : "AXIA～ダイスキでダイキライ～",
 
 	"웨딩드레스 (wedding dress)" : "웨딩드레스",
 	"wedding dress" : "웨딩드레스",
@@ -98,6 +104,9 @@ Alias.db.title = {
     "for you ~tsuki no hikari ga furisosogu terrace" : "For you ~Tsuki no Hikari ga Furisosogu Terrace~",
 
     "todokanai koi '13" : "Todokanai Koi '13",
+
+	"styx helix" : "STYX HELIX",
+	
 };
 
 Alias.db.artist = {
@@ -145,6 +154,7 @@ Alias.db.artist = {
 	"sugawara sayuri" : "菅原紗由理",
 
 	"walkure" : "ワルキューレ",
+	"walküre" : "ワルキューレ",
 	"カナメδ安野希世乃、レイナδ東山奈央、マキナδ西田望見（from ワルキューレ）" : "ワルキューレ",
 
 	"ayakura mei" : "綾倉盟",

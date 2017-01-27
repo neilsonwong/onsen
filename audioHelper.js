@@ -173,7 +173,7 @@ function grabFileMetaData(dir, callback){
 
     //exiftool -artist -album -"AudioBitrate" -j a.mp3
     //exiftool -artist -album -AudioBitrate -j -charset utf8 -if "$FileType eq 'MP3'" "G:/Music"
-    execFile("exiftool", ["-Artist", "-Album", "-Title", "-AudioBitrate", "-ext", "mp3", "-ext", "m4a", "-charset", "utf8", "-j", "-r", dir], 
+    execFile("exiftool", ["-Artist", "-Album", "-Title", "-AudioBitrate", "-ext", "mp3", "-ext", "m4a", "-charset", "utf8", "-m", "-j", "-r", dir], 
         { maxBuffer: 10000000 }, 
         function(error, stdout, stderr) {
 

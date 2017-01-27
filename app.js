@@ -14,4 +14,4 @@ let songManager = require("./songManager");
     // });
 // });
 
-// audioHelper.imHalping("G:/Music");
+// audioHelper.imHalping("");
