@@ -143,6 +143,7 @@ Lastfm.generateFixedLastfmDb = function generateFixedLastfmDb(callback) {
             console.log("writing song files");
             fs.writeFileSync("songs.json", JSON.stringify(songs.all, null, 2));
             fs.writeFileSync("playable.json", JSON.stringify(songs.playable, null, 2));
+            fs.writeFileSync("weekly.json", JSON.stringify(songs.weeklyTop, null, 2));
 
             return callback(true);
         });
@@ -168,6 +169,7 @@ Lastfm.updateData = function updateData(callback) {
             });
         },
         function getDataFromLastfm(next){
+            // return true;
             return fresh ? Lastfm.generateDbFiles(next) : Lastfm.updateDbFiles(next);
         }
     ],

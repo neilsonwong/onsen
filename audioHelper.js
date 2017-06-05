@@ -199,6 +199,7 @@ function grabFileMetaData(dir, callback){
 AudioHelper.mergeMetadata = function(callback){
     let playable = require("./playable");
     let catalogue = require("./catalogue");
+    let weekly = require("./weekly");
     let artist, song, aArtist, aSong;
     let addedSource = 0;
     let totalSongs = 0;
@@ -230,6 +231,12 @@ AudioHelper.mergeMetadata = function(callback){
         }
     }
 
+    let i = 0;
+    for(; i < weekly.length; ++i){
+        //append audiosource into weekly chart
+        weekly[i].sourceFile = playable[weekly[i].artist][weekly[i].title].sourceFile;
+    }
+
     //write new playable
     fs.writeFile("playable.json", JSON.stringify(playable, null, 2), function(){
         console.log("playable written");
@@ -239,6 +246,10 @@ AudioHelper.mergeMetadata = function(callback){
             let error = (totalSongs - addedSource) == 0 ? null : "error: please ensure all files have paths";
             return callback(error);
         }
+    });
+
+    fs.writeFile("weekly.json", JSON.stringify(weekly, null, 2), function(){
+        console.log("weekly written");
     });
 }
 module.exports = AudioHelper;

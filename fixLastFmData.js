@@ -58,10 +58,12 @@ LastFmDataFixer.buildSongBook = function buildSongBook(db3){
     let playable = {};
     let topsong = {};
 	let i, len, song;
+    let weeklyChart = [];
 
     //build song archive
     for (var week in db3) {
         if (db3.hasOwnProperty(week)) { 
+            //build array of top songs for each week
             len = db3[week].tracks.length;
             for (i = 0; i < len; ++i){
                 song = db3[week].tracks[i];
@@ -98,6 +100,13 @@ LastFmDataFixer.buildSongBook = function buildSongBook(db3){
         }
     }
 
+    for (var week in db3) {
+        if (db3.hasOwnProperty(week)) { 
+            //build array of top songs for each week
+            buildWeeklyTop(week);
+        }
+    }
+
     function totalPlays(artistObj){
         var totalPlays = 0;
         for (var title in artistObj){
@@ -115,7 +124,24 @@ LastFmDataFixer.buildSongBook = function buildSongBook(db3){
         }
     }
 
-    return {all: songs, playable: playable};
+    function buildWeeklyTop(week){
+        if (db3[week] && db3[week].tracks.length > 0){
+            let song = db3[week].tracks[0];
+            let playableEntry = playable[song.artist][song.title];
+            let metaData = {
+              "week": week,
+              "title": song.title,
+              "artist": song.artist,
+              "playCount": playableEntry.playCount,
+              "weeksAtTop": playableEntry.weeksAtTop,
+              "topWeek": playableEntry.topWeek,
+              "sourceFile": null,
+            }
+            weeklyChart.push(metaData);
+        }
+    }
+
+    return {all: songs, playable: playable, weeklyTop: weeklyChart};
 }
 
 module.exports = LastFmDataFixer;
