@@ -232,9 +232,14 @@ AudioHelper.mergeMetadata = function(callback){
     }
 
     let i = 0;
+    let urlRoot = "/mp3/";
     for(; i < weekly.length; ++i){
-        //append audiosource into weekly chart
-        weekly[i].sourceFile = playable[weekly[i].artist][weekly[i].title].sourceFile;
+        //append other meta data  into weekly chart
+        let sf = playable[weekly[i].artist][weekly[i].title].sourceFile;
+        weekly[i].sourceFile = sf;
+        weekly[i].img = playable[weekly[i].artist][weekly[i].title].image;
+        //maybe switch the character cuz windows is diff
+        weekly[i].url = sf ? encodeURI(urlRoot + sf.substring(sf.lastIndexOf("/")+1)) : "";
     }
 
     //write new playable
