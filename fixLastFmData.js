@@ -137,7 +137,9 @@ LastFmDataFixer.buildSongBook = function buildSongBook(db3){
               "topWeek": playableEntry.topWeek,
               "sourceFile": null,
             }
-            weeklyChart.push(metaData);
+            if (week > 1319371100){
+                weeklyChart.push(metaData);
+            }
         }
     }
 

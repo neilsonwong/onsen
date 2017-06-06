@@ -1,6 +1,7 @@
 "use strict";
 
 let fs = require("fs");
+let path = require("path");
 
 let lastfm;
 let audioHelper = require("./audioHelper");
@@ -11,20 +12,21 @@ let songManager = require("./songManager");
     // Lastfm.beginningOfTime = 1318052895;
     // "/home/neilson/Music"
 
-function Onsen(apiKey, lastFmUser, startTimeStamp, musicLib){
-	lastfm = require("./lastfm")(apiKey, lastFmUser, startTimeStamp);
+function Onsen(apiKey, lastFmUser, startTimeStamp, musicLib, dataRoot){
+	lastfm = require("./lastfm")(apiKey, lastFmUser, startTimeStamp, dataRoot);
 	Onsen.musicLib = musicLib;
+	Onsen.dataRoot = dataRoot;
 	return Onsen;
 }
 
 Onsen.update = function updateData(callback){
 	lastfm.updateData(function(success){
 	    console.log(success ? "yay" : "nay");
-	    audioHelper.generateCatalogue(Onsen.musicLib, function(){
-	        audioHelper.mergeMetadata(function(error){
+	    audioHelper.generateCatalogue(Onsen.musicLib, Onsen.dataRoot, function(){
+	        audioHelper.mergeMetadata(Onsen.dataRoot, function(error){
 	            // if there is an error, it means files are missing
 	            // let sm = new songManager();
-	            fs.writeFile("lastUpdated.txt", Date.now(), () => {
+	            fs.writeFile(path.join(Onsen.dataRoot, "lastUpdated.txt"), Date.now(), () => {
 		            if (callback){
 		            	return callback()
 		            }
@@ -35,7 +37,7 @@ Onsen.update = function updateData(callback){
 }
 
 Onsen.getWeekly = function getWeekly(callback){
-	fs.readFile("lastUpdated.txt", (err, data) => {
+	fs.readFile(path.join(Onsen.dataRoot, "lastUpdated.txt"), (err, data) => {
 		function update(){
 			Onsen.update(() => {
 				if (callback){

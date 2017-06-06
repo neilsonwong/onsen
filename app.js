@@ -1,17 +1,11 @@
 "use strict";
 
-let lastfm = require("./lastfm");
-let audioHelper = require("./audioHelper");
-let songManager = require("./songManager");
+let Onsen = require("./index")("200ef837557217e186dd2eed9a6075b8", 
+	"mahourin",
+    1318052895,
+    "/home/neilson/Music",
+    "/home/neilson/onsendb");
 
-lastfm.updateData(function(success){
-    console.log(success ? "yay" : "nay");
-    audioHelper.generateCatalogue("/home/neilson/Music", function(){
-        audioHelper.mergeMetadata(function(error){
-            // if there is an error, it means files are missing
-            let sm = new songManager();
-        });
-    });
+Onsen.getWeekly(() => {
+	console.log("got weekly");
 });
-
-// audioHelper.imHalping("G:/Music");

@@ -3,14 +3,17 @@
 let request = require("request");
 let async = require("async");
 let fs = require("fs");
+let path = require("path");
 
 let fixLastFmData = require("./fixLastFmData");
 
-function Lastfm(){}
-
-Lastfm.apiKey = "200ef837557217e186dd2eed9a6075b8";
-Lastfm.user = "mahourin";
-Lastfm.beginningOfTime = 1318052895;
+function Lastfm(apiKey, user, start, dataDir){
+    Lastfm.apiKey = apiKey;
+    Lastfm.user = user; 
+    Lastfm.beginningOfTime = start;
+    Lastfm.dataDir = dataDir;
+    return Lastfm;
+}
 
 Lastfm.grabWeeks = function (callback) {
     request.post("http://ws.audioscrobbler.com/2.0/", {
@@ -87,7 +90,7 @@ let genDb = function genDb(cutoff, callback){
                 setTimeout(function(){
                     console.log("getting week " + fromdate  + " ... " + todate);
                     Lastfm.getTracks(item.to, item.from, function(topTracks){
-                        fs.writeFile("database/"+item.from+".json", topTracks, next);
+                        fs.writeFile(path.join(Lastfm.dataDir, "database", item.from+".json"), topTracks, next);
                     });
                 },
                 1500);
@@ -110,7 +113,7 @@ let genDb = function genDb(cutoff, callback){
 Lastfm.generateFixedLastfmDb = function generateFixedLastfmDb(callback) {
     let getDownloadedDatabases = function(callback){
         let testFolder = "database";
-        fs.readdir(testFolder, (err, files) => {
+        fs.readdir(path.join(Lastfm.dataDir, testFolder), (err, files) => {
             if (callback){
                 return callback(files);
             }
@@ -118,7 +121,7 @@ Lastfm.generateFixedLastfmDb = function generateFixedLastfmDb(callback) {
     }
 
     let parseDownloadedDatabase = function(file, callback){
-        fs.readFile(file, function(err, data){
+        fs.readFile(path.join(Lastfm.dataDir, file), function(err, data){
             let db = JSON.parse(data).weeklytrackchart;
             return fixLastFmData.aggregateWeeklyTracks(db, callback);
         });
@@ -141,9 +144,9 @@ Lastfm.generateFixedLastfmDb = function generateFixedLastfmDb(callback) {
             var songs = fixLastFmData.buildSongBook(db3);
 
             console.log("writing song files");
-            fs.writeFileSync("songs.json", JSON.stringify(songs.all, null, 2));
-            fs.writeFileSync("playable.json", JSON.stringify(songs.playable, null, 2));
-            fs.writeFileSync("weekly.json", JSON.stringify(songs.weeklyTop, null, 2));
+            fs.writeFileSync(path.join(Lastfm.dataDir, "songs.json"), JSON.stringify(songs.all, null, 2));
+            fs.writeFileSync(path.join(Lastfm.dataDir, "playable.json"), JSON.stringify(songs.playable, null, 2));
+            fs.writeFileSync(path.join(Lastfm.dataDir, "weekly.json"), JSON.stringify(songs.weeklyTop, null, 2));
 
             return callback(true);
         });
@@ -156,12 +159,12 @@ Lastfm.updateData = function updateData(callback) {
 
     async.series([
         function ensureDbFolderExists(next) {
-            fs.access(dbPath, function(err) {
+            fs.access(path.join(Lastfm.dataDir, dbPath), function(err) {
                 if (err){
                     //cannot hit db path
                     //lets make it
                     fresh = true;
-                    return fs.mkdir(dbPath, next);
+                    return fs.mkdir(path.join(Lastfm.dataDir, dbPath), next);
                 }
                 else {
                     return next();

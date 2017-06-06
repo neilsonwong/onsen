@@ -4,6 +4,7 @@ let execFile = require('child_process').execFile;
 let async = require("async");
 let alias = require("./alias");
 let fs = require("fs");
+let path = require("path");
 
 function splitMp3(inputFile, duration, outputFile, callback) {
     //overload
@@ -89,7 +90,7 @@ AudioProcessor.sliceAndDice = function(minlength ,callback){
     });
 };
 
-AudioHelper.generateCatalogue = function(dirs, callback){
+AudioHelper.generateCatalogue = function(dirs, dataRoot, callback){
     //handle non arrays
     if (!Array.isArray(dirs)){
         dirs = [dirs];
@@ -136,7 +137,7 @@ AudioHelper.generateCatalogue = function(dirs, callback){
     },
     function done(){
         console.log("done cataloguing, writing catalogue");
-        fs.writeFile("catalogue.json", JSON.stringify(catalogue, null, 2), function(){
+        fs.writeFile(path.join(dataRoot, "catalogue.json"), JSON.stringify(catalogue, null, 2), function(){
             console.log("catalogue written");
             if (callback){
                 return callback();
@@ -196,10 +197,10 @@ function grabFileMetaData(dir, callback){
 }
 
 
-AudioHelper.mergeMetadata = function(callback){
-    let playable = require("./playable");
-    let catalogue = require("./catalogue");
-    let weekly = require("./weekly");
+AudioHelper.mergeMetadata = function(dataRoot, callback){
+    let playable = require(path.join(dataRoot, "playable"));
+    let catalogue = require(path.join(dataRoot, "catalogue"));
+    let weekly = require(path.join(dataRoot, "weekly"));
     let artist, song, aArtist, aSong;
     let addedSource = 0;
     let totalSongs = 0;
@@ -238,12 +239,14 @@ AudioHelper.mergeMetadata = function(callback){
         let sf = playable[weekly[i].artist][weekly[i].title].sourceFile;
         weekly[i].sourceFile = sf;
         weekly[i].img = playable[weekly[i].artist][weekly[i].title].image;
+        weekly[i].count = weekly[i].playCount;
         //maybe switch the character cuz windows is diff
         weekly[i].url = sf ? encodeURI(urlRoot + sf.substring(sf.lastIndexOf("/")+1)) : "";
+        weekly[i].duration = calculateDuration(weekly[i]);
     }
 
     //write new playable
-    fs.writeFile("playable.json", JSON.stringify(playable, null, 2), function(){
+    fs.writeFile(path.join(dataRoot, "playable.json"), JSON.stringify(playable, null, 2), function(){
         console.log("playable written");
         console.log("added: " + addedSource);
         console.log("total: " + totalSongs);
@@ -253,8 +256,32 @@ AudioHelper.mergeMetadata = function(callback){
         }
     });
 
-    fs.writeFile("weekly.json", JSON.stringify(weekly, null, 2), function(){
+    fs.writeFile(path.join(dataRoot, "weekly.json"), JSON.stringify(weekly, null, 2), function(){
         console.log("weekly written");
     });
+
+    function calculateDuration(track){
+        let duration = 7000;
+
+        //plays gives a diminishing returns increase based on count
+        if (track.playCount > 1000){
+            duration += 2000;
+        }
+        else if (track.playCount > 500){
+            duration += 1500;
+        }
+        else if (track.playCount > 250){
+            duration += 1000;
+        }
+        else if (track.playCount > 100){
+            duration += 500;
+        }
+
+        //weeks @ top gives a linear scaling increase
+        if (track.weeksAtTop > 1){
+            duration += (track.weeksAtTop - 1) * 200;
+        }
+        return duration;
+    }
 }
 module.exports = AudioHelper;
