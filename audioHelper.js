@@ -250,14 +250,13 @@ AudioHelper.mergeMetadata = function(dataRoot, callback){
         console.log("playable written");
         console.log("added: " + addedSource);
         console.log("total: " + totalSongs);
-        if (callback){
-            let error = (totalSongs - addedSource) == 0 ? null : "error: please ensure all files have paths";
-            return callback(error);
-        }
-    });
-
-    fs.writeFile(path.join(dataRoot, "weekly.json"), JSON.stringify(weekly, null, 2), function(){
-        console.log("weekly written");
+        fs.writeFile(path.join(dataRoot, "weekly.json"), JSON.stringify(weekly, null, 2), function(){
+            console.log("weekly written");
+            if (callback){
+                let error = (totalSongs - addedSource) == 0 ? null : "error: please ensure all files have paths";
+                return callback(error);
+            }
+        });
     });
 
     function calculateDuration(track){
