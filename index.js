@@ -34,7 +34,7 @@ Onsen.update = function updateData(callback){
 	        });
 	    });
 	});
-}
+};
 
 Onsen.getWeekly = function getWeekly(callback){
 	fs.readFile(path.join(Onsen.dataRoot, "lastUpdated.txt"), (err, data) => {
@@ -62,6 +62,10 @@ Onsen.getWeekly = function getWeekly(callback){
 			}
 		}
 	});
-}
+};
+
+Onsen.cutSongs = function cutSongs(callback){
+	audioHelper.cutMp3UsingWeekly(Onsen.musicLib, Onsen.dataRoot, callback);
+};
 
 module.exports = Onsen;

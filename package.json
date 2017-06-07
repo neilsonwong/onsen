@@ -1,6 +1,6 @@
 {
   "name": "onsenbackend",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "backend generator for lastfm data file",
   "main": "index.js",
   "scripts": {

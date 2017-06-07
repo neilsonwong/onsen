@@ -14,6 +14,7 @@ function splitMp3(inputFile, duration, outputFile, callback) {
     	outputFile = "cut_" + inputFile;
     }
 
+
     //"ffmpeg -t 30 -i inputfile.mp3 -acodec copy outputfile.mp3"
     return execFile("ffmpeg", ["-t", duration, "-i", inputFile, "-acodec", "copy", outputFile], function(error, stdout, stderr) {
         // command output is in stdout
@@ -259,28 +260,95 @@ AudioHelper.mergeMetadata = function(dataRoot, callback){
         });
     });
 
-    function calculateDuration(track){
-        let duration = 7000;
-
-        //plays gives a diminishing returns increase based on count
-        if (track.playCount > 1000){
-            duration += 2000;
-        }
-        else if (track.playCount > 500){
-            duration += 1500;
-        }
-        else if (track.playCount > 250){
-            duration += 1000;
-        }
-        else if (track.playCount > 100){
-            duration += 500;
-        }
-
-        //weeks @ top gives a linear scaling increase
-        if (track.weeksAtTop > 1){
-            duration += (track.weeksAtTop - 1) * 200;
-        }
-        return duration;
-    }
 }
+
+function calculateDuration(track){
+    let duration = 7000;
+
+    //plays gives a diminishing returns increase based on count
+    if (track.playCount > 1000){
+        duration += 2000;
+    }
+    else if (track.playCount > 500){
+        duration += 1500;
+    }
+    else if (track.playCount > 250){
+        duration += 1000;
+    }
+    else if (track.playCount > 100){
+        duration += 500;
+    }
+
+    //weeks @ top gives a linear scaling increase
+    if (track.weeksAtTop > 1){
+        duration += (track.weeksAtTop - 1) * 200;
+    }
+    return duration;
+}
+
+AudioHelper.cutMp3UsingWeekly = function(audioRoot, dataRoot, callback){
+    let weekly = require(path.join(dataRoot, "weekly"));
+    let audioFolderPath = audioRoot;
+    let outputFolderPath = path.join(audioRoot, "cut_mp3");
+    let gonnaGetCut = [];
+    let didNotSlice = [];
+    let alreadyCut = new Set();
+
+    async.series([
+        function ensureOutputFolderExists(next) {
+            fs.access(outputFolderPath, function(err) {
+                if (err){
+                    //cannot hit db path
+                    //lets make it
+                    return fs.mkdir(outputFolderPath, next);
+                }
+                else {
+                    return next();
+                }
+            });
+        },
+        function tryToCutDEMALL(next){
+            console.log("trying to cut")
+            // return async.eachLimit(weekly, 5, function(songData, after){
+            return async.eachSeries(weekly, function(songData, after){
+                let songFile = songData.sourceFile;
+                if (songFile === null){
+                    console.log("no source file");
+                    return after();
+                }
+                let fileName = songFile.split('\\').pop().split('/').pop();
+                if (alreadyCut.has(songFile)){
+                    console.log("already cut " + songFile);
+                    return after();
+                }
+
+                console.log(songFile);
+                let outFile = path.join(outputFolderPath, fileName);
+                fs.unlink(outFile, function(err){
+                    fs.access(songFile, function(err){
+                        if (err) {
+                            //sum ting wong
+                            console.log("stw")
+                            didNotSlice.push(songData);
+                            return after();
+                        }
+                        else {
+                            alreadyCut.add(songFile);
+                            return splitMp3(songFile, Math.ceil(songData.duration/1000)*songData.weeksAtTop, outFile, after);
+                        }
+                    });
+                });
+            }, function(){
+                console.log("async finished");
+                return next();
+            });
+        }
+    ],
+    function done(){
+        console.log("done cutting mp3s");
+        if (callback){
+            return callback();
+        }
+    });
+};
 module.exports = AudioHelper;
