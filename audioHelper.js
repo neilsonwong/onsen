@@ -4,6 +4,7 @@ let execFile = require('child_process').execFile;
 let async = require("async");
 let alias = require("./alias");
 let fs = require("fs");
+let path = require("path");
 
 function splitMp3(inputFile, duration, outputFile, callback) {
     //overload
@@ -12,6 +13,7 @@ function splitMp3(inputFile, duration, outputFile, callback) {
     	callback = outputFile;
     	outputFile = "cut_" + inputFile;
     }
+
 
     //"ffmpeg -t 30 -i inputfile.mp3 -acodec copy outputfile.mp3"
     return execFile("ffmpeg", ["-t", duration, "-i", inputFile, "-acodec", "copy", outputFile], function(error, stdout, stderr) {
@@ -89,7 +91,7 @@ AudioProcessor.sliceAndDice = function(minlength ,callback){
     });
 };
 
-AudioHelper.generateCatalogue = function(dirs, callback){
+AudioHelper.generateCatalogue = function(dirs, dataRoot, callback){
     //handle non arrays
     if (!Array.isArray(dirs)){
         dirs = [dirs];
@@ -136,7 +138,7 @@ AudioHelper.generateCatalogue = function(dirs, callback){
     },
     function done(){
         console.log("done cataloguing, writing catalogue");
-        fs.writeFile("catalogue.json", JSON.stringify(catalogue, null, 2), function(){
+        fs.writeFile(path.join(dataRoot, "catalogue.json"), JSON.stringify(catalogue, null, 2), function(){
             console.log("catalogue written");
             if (callback){
                 return callback();
@@ -196,9 +198,10 @@ function grabFileMetaData(dir, callback){
 }
 
 
-AudioHelper.mergeMetadata = function(callback){
-    let playable = require("./playable");
-    let catalogue = require("./catalogue");
+AudioHelper.mergeMetadata = function(dataRoot, callback){
+    let playable = require(path.join(dataRoot, "playable"));
+    let catalogue = require(path.join(dataRoot, "catalogue"));
+    let weekly = require(path.join(dataRoot, "weekly"));
     let artist, song, aArtist, aSong;
     let addedSource = 0;
     let totalSongs = 0;
@@ -230,15 +233,122 @@ AudioHelper.mergeMetadata = function(callback){
         }
     }
 
+    let i = 0;
+    let urlRoot = "/mp3/";
+    for(; i < weekly.length; ++i){
+        //append other meta data  into weekly chart
+        let sf = playable[weekly[i].artist][weekly[i].title].sourceFile;
+        weekly[i].sourceFile = sf;
+        weekly[i].img = playable[weekly[i].artist][weekly[i].title].image;
+        weekly[i].count = weekly[i].playCount;
+        //maybe switch the character cuz windows is diff
+        weekly[i].url = sf ? encodeURI(urlRoot + sf.substring(sf.lastIndexOf("/")+1)) : "";
+        weekly[i].duration = calculateDuration(weekly[i]);
+    }
+
     //write new playable
-    fs.writeFile("playable.json", JSON.stringify(playable, null, 2), function(){
+    fs.writeFile(path.join(dataRoot, "playable.json"), JSON.stringify(playable, null, 2), function(){
         console.log("playable written");
         console.log("added: " + addedSource);
         console.log("total: " + totalSongs);
+        fs.writeFile(path.join(dataRoot, "weekly.json"), JSON.stringify(weekly, null, 2), function(){
+            console.log("weekly written");
+            if (callback){
+                let error = (totalSongs - addedSource) == 0 ? null : "error: please ensure all files have paths";
+                return callback(error);
+            }
+        });
+    });
+
+}
+
+function calculateDuration(track){
+    let duration = 7000;
+
+    //plays gives a diminishing returns increase based on count
+    if (track.playCount > 1000){
+        duration += 2000;
+    }
+    else if (track.playCount > 500){
+        duration += 1500;
+    }
+    else if (track.playCount > 250){
+        duration += 1000;
+    }
+    else if (track.playCount > 100){
+        duration += 500;
+    }
+
+    //weeks @ top gives a linear scaling increase
+    if (track.weeksAtTop > 1){
+        duration += (track.weeksAtTop - 1) * 200;
+    }
+    return duration;
+}
+
+AudioHelper.cutMp3UsingWeekly = function(audioRoot, dataRoot, callback){
+    let weekly = require(path.join(dataRoot, "weekly"));
+    let audioFolderPath = audioRoot;
+    let outputFolderPath = path.join(audioRoot, "cut_mp3");
+    let gonnaGetCut = [];
+    let didNotSlice = [];
+    let alreadyCut = new Set();
+
+    async.series([
+        function ensureOutputFolderExists(next) {
+            fs.access(outputFolderPath, function(err) {
+                if (err){
+                    //cannot hit db path
+                    //lets make it
+                    return fs.mkdir(outputFolderPath, next);
+                }
+                else {
+                    return next();
+                }
+            });
+        },
+        function tryToCutDEMALL(next){
+            console.log("trying to cut")
+            // return async.eachLimit(weekly, 5, function(songData, after){
+            return async.eachSeries(weekly, function(songData, after){
+                let songFile = songData.sourceFile;
+                if (songFile === null){
+                    console.log("no source file");
+                    return after();
+                }
+                let fileName = songFile.split('\\').pop().split('/').pop();
+                if (alreadyCut.has(songFile)){
+                    console.log("already cut " + songFile);
+                    return after();
+                }
+
+                console.log(songFile);
+                let outFile = path.join(outputFolderPath, fileName);
+                fs.unlink(outFile, function(err){
+                    fs.access(songFile, function(err){
+                        if (err) {
+                            //sum ting wong
+                            console.log("stw")
+                            didNotSlice.push(songData);
+                            return after();
+                        }
+                        else {
+                            alreadyCut.add(songFile);
+                            return splitMp3(songFile, Math.ceil(songData.duration/1000)*songData.weeksAtTop, outFile, after);
+                        }
+                    });
+                });
+            }, function(){
+                console.log("async finished");
+                return next();
+            });
+        }
+    ],
+    function done(){
+        console.log("done cutting mp3s");
         if (callback){
-            let error = (totalSongs - addedSource) == 0 ? null : "error: please ensure all files have paths";
-            return callback(error);
+            return callback();
         }
     });
-}
+};
 module.exports = AudioHelper;
