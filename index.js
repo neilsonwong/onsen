@@ -68,4 +68,8 @@ Onsen.cutSongs = function cutSongs(callback){
 	audioHelper.cutMp3UsingWeekly(Onsen.musicLib, Onsen.dataRoot, callback);
 };
 
+Onsen.copyWeeklyToNewFolder = function copyWeeklyToNewFolder(folder, callback){
+	audioHelper.copyWeeklyToNewFolder(Onsen.musicLib, folder, Onsen.dataRoot, callback);
+};
+
 module.exports = Onsen;

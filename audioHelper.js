@@ -351,4 +351,25 @@ AudioHelper.cutMp3UsingWeekly = function(audioRoot, dataRoot, callback){
         }
     });
 };
+
+
+AudioHelper.copyWeeklyToNewFolder = function(audioRoot, newAudioRoot, dataRoot, callback){
+    let weekly = require(path.join(dataRoot, "weekly"));
+    let done = new Set();
+    let fileName, sourceFile;
+    for (let i = 0; i < weekly.length; ++i){
+        sourceFile = weekly[i].sourceFile;
+        if (done.has(sourceFile) || sourceFile === null){
+            continue;
+        }
+
+        fileName = sourceFile.split('\\').pop().split('/').pop();
+        done.add(sourceFile);
+        fs.createReadStream(sourceFile).pipe(fs.createWriteStream(path.join(newAudioRoot, fileName)));
+    }
+    if (callback){
+        return callback();
+    }
+};
+
 module.exports = AudioHelper;
