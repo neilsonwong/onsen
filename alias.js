@@ -106,6 +106,22 @@ Alias.db.title = {
     "todokanai koi '13" : "Todokanai Koi '13",
 
 	"styx helix" : "STYX HELIX",
+
+	"prism" : "プリズム",
+	"sora no kakera" : "空の欠片",
+
+	"vidro moyou": "ビードロ模様",
+
+	"ellinia tree dungeon" : "Missing You",
+
+	"ignite": "IGNITE",
+
+	"courage" : "courage",
+
+	"natsuiro egao de 1, 2, jump!" : "Natsuiro Egao de 1, 2, Jump!",
+
+
+
 	
 };
 
@@ -156,6 +172,7 @@ Alias.db.artist = {
 	"walkure" : "ワルキューレ",
 	"walküre" : "ワルキューレ",
 	"カナメδ安野希世乃、レイナδ東山奈央、マキナδ西田望見（from ワルキューレ）" : "ワルキューレ",
+	"美雲ΔJUNNA、フレイアΔ鈴木みのり、カナメΔ安野希世乃（from ワルキューレ）" : "ワルキューレ",
 
 	"ayakura mei" : "綾倉盟",
 
@@ -256,6 +273,16 @@ Alias.db.artist = {
   	"aim": "AiM",
 
   	"taeyang": "태양",
+
+  	"lisa": "LiSA",
+
+  	"naoki sato": "佐藤直紀",
+
+  	"utada hikaru": "宇多田ヒカル",
+
+  	"tomatsu haruka": "戸松遥",
+
+
 };
 
 Alias.db.special = {
