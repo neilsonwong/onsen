@@ -266,16 +266,16 @@ function calculateDuration(track){
     let duration = 7000;
 
     //plays gives a diminishing returns increase based on count
-    if (track.playCount > 1000){
+    if (track.totalPlayCount > 1000){
         duration += 2000;
     }
-    else if (track.playCount > 500){
+    else if (track.totalPlayCount > 500){
         duration += 1500;
     }
-    else if (track.playCount > 250){
+    else if (track.totalPlayCount > 250){
         duration += 1000;
     }
-    else if (track.playCount > 100){
+    else if (track.totalPlayCount > 100){
         duration += 500;
     }
 

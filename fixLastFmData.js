@@ -31,7 +31,7 @@ LastFmDataFixer.aggregateWeeklyTracks = function aggregateWeeklyTracks (db, call
             trackHashMap[tempKey] = {
                 title: title,
                 artist: artist,
-                playCount: playCount
+                playCount: playCount,
             }
         }
     }
@@ -72,11 +72,16 @@ LastFmDataFixer.buildSongBook = function buildSongBook(db3){
                 }
 
                 if (songs[song.artist][song.title] === undefined){
-                    song.weeksAtTop = 0;
-                    songs[song.artist][song.title] = song;
+                    songs[song.artist][song.title] = {
+                        title: song.title,
+                        artist: song.artist,
+                        playCount: song.playCount,
+                        totalPlayCount: song.playCount,
+                        weeksAtTop: 0,
+                    }
                 }
                 else {
-                    songs[song.artist][song.title].playCount += song.playCount;
+                    songs[song.artist][song.title].totalPlayCount += song.playCount;
                 }
                 
                 if (i === 0){
@@ -93,8 +98,13 @@ LastFmDataFixer.buildSongBook = function buildSongBook(db3){
 
                 //top song
                 if (topsong[song.artist] && topsong[song.artist][song.title] !== undefined){
-                    playable[song.artist][song.title] = songs[song.artist][song.title];
-                    playable[song.artist][song.title].topWeek = topsong[song.artist][song.title];
+                    playable[song.artist][song.title] = {
+                        title: song.title,
+                        artist: song.artist,
+                        totalPlayCount: songs[song.artist][song.title].totalPlayCount,
+                        weeksAtTop: songs[song.artist][song.title].weeksAtTop,
+                        topWeek: topsong[song.artist][song.title]
+                    };
                 }
             }
         }
@@ -132,12 +142,15 @@ LastFmDataFixer.buildSongBook = function buildSongBook(db3){
               "week": week,
               "title": song.title,
               "artist": song.artist,
-              "playCount": playableEntry.playCount,
+              "playCount": song.playCount,
+              "totalPlayCount": playableEntry.totalPlayCount,
               "weeksAtTop": playableEntry.weeksAtTop,
               "topWeek": playableEntry.topWeek,
               "sourceFile": null,
             }
             if (week > 1319371100){
+                if (metaData.playCount > metaData.totalPlayCount)
+                    console.log(JSON.stringify(metaData));
                 weeklyChart.push(metaData);
             }
         }
