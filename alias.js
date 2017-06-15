@@ -34,44 +34,44 @@ function doDaWork(raw, prop){
 		return null;
 	}
 	raw = raw.trim();
-    let lRaw = raw.toLowerCase();
+	let lRaw = raw.toLowerCase();
 	if (Alias.db[prop][lRaw] !== undefined){
 		return Alias.db[prop][lRaw];
-    }
-    else {
-        return raw;
-    }
+	}
+	else {
+		return raw;
+	}
 }
 
 Alias.db = {};
 
 Alias.db.title = {
-    "sora wa takaku kaze wa utau" : "空は高く風は歌う",
-    
-    "kimi ni okuru uta" : "キミに贈る歌",
+	"sora wa takaku kaze wa utau" : "空は高く風は歌う",
+	
+	"kimi ni okuru uta" : "キミに贈る歌",
 
-    "mikazuki" : "三日月",
-    "blue days" : "ブルーデイズ",
-    "koi kogarete mita yume" : "恋焦がれて見た夢",
-    "te wo tsunagou" : "手をつなごう",
-    "okaeri" : "おかえり",
+	"mikazuki" : "三日月",
+	"blue days" : "ブルーデイズ",
+	"koi kogarete mita yume" : "恋焦がれて見た夢",
+	"te wo tsunagou" : "手をつなごう",
+	"okaeri" : "おかえり",
 
-    "suki" : "好き",
+	"suki" : "好き",
 
-    "kimi no shiranai monogatari" : "君の知らない物語",
-    "02. 君の知らない物語" : "君の知らない物語",
-    "12. さよならメモリーズ" : "さよならメモリーズ",
-    "sayonara memories" : "さよならメモリーズ",
-    "utakata hanabi" : "うたかた花火",
-    "yakusoku wo shiyou" : "約束をしよう",
+	"kimi no shiranai monogatari" : "君の知らない物語",
+	"02. 君の知らない物語" : "君の知らない物語",
+	"12. さよならメモリーズ" : "さよならメモリーズ",
+	"sayonara memories" : "さよならメモリーズ",
+	"utakata hanabi" : "うたかた花火",
+	"yakusoku wo shiyou" : "約束をしよう",
 
-    "ikenai borderline" : "いけないボーダーライン",
+	"ikenai borderline" : "いけないボーダーライン",
 	"ikenai border line ～album version～" : "いけないボーダーライン",
-    "いけないボーダーライン～album version～" : "いけないボーダーライン",
-    "rune ga pika to hikattara" : "ルンがピカッと光ったら",
+	"いけないボーダーライン～album version～" : "いけないボーダーライン",
+	"rune ga pika to hikattara" : "ルンがピカッと光ったら",
 	"rune ga pika to hikattara ～album version～" : "ルンがピカッと光ったら",
 	"rune ga pikatto hikattara～album version～" :  "ルンがピカッと光ったら",
-    "ルンがピカッと光ったら～album version～" : "ルンがピカッと光ったら",
+	"ルンがピカッと光ったら～album version～" : "ルンがピカッと光ったら",
 	"bokura no senjou" : "僕らの戦場",
 	"axia~daisuki de daikirai~" : "AXIA～ダイスキでダイキライ～",
 	"axia～daisuki de daikirai～" : "AXIA～ダイスキでダイキライ～",
@@ -89,21 +89,21 @@ Alias.db.title = {
 
 	"lull ~soshite bokura wa~" : "lull ～そして僕らは～",
 
-    "sekai wa koi ni ochiteiru": "世界は恋に落ちている",
+	"sekai wa koi ni ochiteiru": "世界は恋に落ちている",
 
-    "02.over the clouds" : "Over the clouds",
+	"02.over the clouds" : "Over the clouds",
 
-    "shake it!": "shake it!",
+	"shake it!": "shake it!",
 
-    "i wish -tri.version-": "I Wish -tri.version-",
+	"i wish -tri.version-": "I Wish -tri.version-",
 
 	"blue" : "blue",
 	
-    "love marginal (honoka mix)": "Love marginal",
+	"love marginal (honoka mix)": "Love marginal",
 
-    "for you ~tsuki no hikari ga furisosogu terrace" : "For you ~Tsuki no Hikari ga Furisosogu Terrace~",
+	"for you ~tsuki no hikari ga furisosogu terrace" : "For you ~Tsuki no Hikari ga Furisosogu Terrace~",
 
-    "todokanai koi '13" : "Todokanai Koi '13",
+	"todokanai koi '13" : "Todokanai Koi '13",
 
 	"styx helix" : "STYX HELIX",
 
@@ -119,6 +119,8 @@ Alias.db.title = {
 	"courage" : "courage",
 
 	"natsuiro egao de 1, 2, jump!" : "Natsuiro Egao de 1, 2, Jump!",
+
+	"yuki, muon, madobenite" : "Yuki, Muon, Madobe Nite",
 
 
 
@@ -161,7 +163,7 @@ Alias.db.artist = {
 	"ikeda ayako" : "池田綾子",
 	"ayako ikeda" : "池田綾子",
 
-    "yoko ishida" : "石田燿子",
+	"yoko ishida" : "石田燿子",
 
 	"kuripurin" : "栗プリン",
 
@@ -172,7 +174,8 @@ Alias.db.artist = {
 	"walkure" : "ワルキューレ",
 	"walküre" : "ワルキューレ",
 	"カナメδ安野希世乃、レイナδ東山奈央、マキナδ西田望見（from ワルキューレ）" : "ワルキューレ",
-	"美雲ΔJUNNA、フレイアΔ鈴木みのり、カナメΔ安野希世乃（from ワルキューレ）" : "ワルキューレ",
+	"美雲δjunna、フレイアδ鈴木みのり、カナメδ安野希世乃（from ワルキューレ）" : "ワルキューレ",
+
 
 	"ayakura mei" : "綾倉盟",
 
@@ -180,7 +183,7 @@ Alias.db.artist = {
 
 	"uehara rena" : "上原れな",
 
-    "haruna luna" : "春奈るな",
+	"haruna luna" : "春奈るな",
 
 	"kawada mami" : "川田まみ",
 	"mami kawada" : "川田まみ",
@@ -189,7 +192,7 @@ Alias.db.artist = {
 	"sally miura" : "三浦サリー",
 
 	"masami okui" : "奥井雅美",
-    "okui masami": "奥井雅美",
+	"okui masami": "奥井雅美",
 
 	"kara" : "카라",
 
@@ -248,7 +251,7 @@ Alias.db.artist = {
 	"emi nitta" : "新田恵海",
 	"nitta emi" : "新田恵海",
 
-    "bibi" : "BiBi",
+	"bibi" : "BiBi",
 
 	"aikawa nanase" : "相川七瀬",
 
@@ -270,18 +273,19 @@ Alias.db.artist = {
 
 	"himawari" : "向日葵",
 
-  	"aim": "AiM",
+	"aim": "AiM",
 
-  	"taeyang": "태양",
+	"taeyang": "태양",
 
-  	"lisa": "LiSA",
+	"lisa": "LiSA",
 
-  	"naoki sato": "佐藤直紀",
+	"naoki sato": "佐藤直紀",
 
-  	"utada hikaru": "宇多田ヒカル",
+	"utada hikaru": "宇多田ヒカル",
 
-  	"tomatsu haruka": "戸松遥",
+	"tomatsu haruka": "戸松遥",
 
+	"kagamine rin": "鏡音リン",
 
 };
 
