@@ -288,7 +288,7 @@ AudioHelper.mergeMetadata = function(audioRoot, dataRoot, callback){
 }
 
 function calculateDuration(track){
-    let duration = 8000;
+    let duration = 10000;
 
     //plays gives a diminishing returns increase based on count
     if (track.playCount > 1000){
@@ -308,7 +308,7 @@ function calculateDuration(track){
     if (track.weeksAtTop > 1){
         duration += (track.weeksAtTop - 1) * 200;
     }
-    return duration+3000;
+    return duration;
 }
 
 AudioHelper.cutMp3UsingWeekly = function(audioRoot, dataRoot, callback){
@@ -359,7 +359,7 @@ AudioHelper.cutMp3UsingWeekly = function(audioRoot, dataRoot, callback){
                         }
                         else {
                             alreadyCut.add(songFile);
-                            return splitMp3(songFile, Math.ceil(songData.duration/1000)*songData.weeksAtTop, outFile, after);
+                            return splitMp3(songFile, Math.ceil(songData.duration/1000 + 2)*songData.weeksAtTop, outFile, after);
                         }
                     });
                 });

@@ -23,7 +23,7 @@ Onsen.update = function updateData(callback){
 	lastfm.updateData(function(success){
 	    console.log(success ? "yay" : "nay");
 	    audioHelper.generateCatalogue(Onsen.musicLib, Onsen.dataRoot, function(){
-	        audioHelper.mergeMetadata(Onsen.dataRoot, function(error){
+	        audioHelper.mergeMetadata(Onsen.musicLib, Onsen.dataRoot, function(error){
 	            // if there is an error, it means files are missing
 	            // let sm = new songManager();
 	            fs.writeFile(path.join(Onsen.dataRoot, "lastUpdated.txt"), Date.now(), () => {
