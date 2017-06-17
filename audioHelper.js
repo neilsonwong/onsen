@@ -9,9 +9,9 @@ let path = require("path");
 function splitMp3(inputFile, duration, outputFile, callback) {
     //overload
     if (typeof outputFile === "function"){
-    	//no outputFile has been passed, it is the callback
-    	callback = outputFile;
-    	outputFile = "cut_" + inputFile;
+        //no outputFile has been passed, it is the callback
+        callback = outputFile;
+        outputFile = "cut_" + inputFile;
     }
 
 
@@ -19,11 +19,11 @@ function splitMp3(inputFile, duration, outputFile, callback) {
     return execFile("ffmpeg", ["-t", duration, "-i", inputFile, "-acodec", "copy", outputFile], function(error, stdout, stderr) {
         // command output is in stdout
         if (error){
-        	console.log(error);
+            console.log(error);
         }
 
         if (callback){
-        	return callback();
+            return callback();
         }
     });
 }
@@ -198,7 +198,7 @@ function grabFileMetaData(dir, callback){
 }
 
 
-AudioHelper.mergeMetadata = function(dataRoot, callback){
+AudioHelper.mergeMetadata = function(audioRoot, dataRoot, callback){
     let playable = require(path.join(dataRoot, "playable"));
     let catalogue = require(path.join(dataRoot, "catalogue"));
     let weekly = require(path.join(dataRoot, "weekly"));
@@ -223,6 +223,7 @@ AudioHelper.mergeMetadata = function(dataRoot, callback){
                     playable[artist][song].sourceFile = catalogue[aArtist][aSong].SourceFile;
             }
             else {
+                console.log(catalogue[aArtist])
                 //doesn't exist, add blank entries
                 playable[artist][song].album = null;
                 playable[artist][song].audioBitrate = null;
@@ -232,6 +233,28 @@ AudioHelper.mergeMetadata = function(dataRoot, callback){
             }
         }
     }
+
+    //add / fix colours
+
+    function rgb2Hex(rgb){
+        return "#" + ("0" + rgb[0].toString(16)).slice(-2) +
+            ("0" + rgb[1].toString(16)).slice(-2) +
+            ("0" + rgb[2].toString(16)).slice(-2);
+    }
+
+    var colours = {}
+    let filename;
+    try {
+        let moodData = require(path.join(dataRoot, "moodData"));
+        for (var moodFile in moodData){
+            filename = moodFile.substring(audioRoot.length + 2).replace(".mood", ".mp3").toLowerCase();
+            colours[filename] = rgb2Hex(moodData[moodFile])
+        }
+    }
+    catch(e){
+        console.log(e);
+    }
+    // console.log(colours)
 
     let i = 0;
     let urlRoot = "/mp3/";
@@ -244,6 +267,8 @@ AudioHelper.mergeMetadata = function(dataRoot, callback){
         //maybe switch the character cuz windows is diff
         weekly[i].url = sf ? encodeURI(urlRoot + sf.substring(sf.lastIndexOf("/")+1)) : "";
         weekly[i].duration = calculateDuration(weekly[i]);
+        filename = sf.substring(sf.lastIndexOf("/")+1).toLowerCase()
+        weekly[i].colour = colours[filename] || "";
     }
 
     //write new playable
@@ -263,19 +288,19 @@ AudioHelper.mergeMetadata = function(dataRoot, callback){
 }
 
 function calculateDuration(track){
-    let duration = 7000;
+    let duration = 8000;
 
     //plays gives a diminishing returns increase based on count
-    if (track.totalPlayCount > 1000){
+    if (track.playCount > 1000){
         duration += 2000;
     }
-    else if (track.totalPlayCount > 500){
+    else if (track.playCount > 500){
         duration += 1500;
     }
-    else if (track.totalPlayCount > 250){
+    else if (track.playCount > 250){
         duration += 1000;
     }
-    else if (track.totalPlayCount > 100){
+    else if (track.playCount > 100){
         duration += 500;
     }
 
@@ -283,7 +308,7 @@ function calculateDuration(track){
     if (track.weeksAtTop > 1){
         duration += (track.weeksAtTop - 1) * 200;
     }
-    return duration;
+    return duration+3000;
 }
 
 AudioHelper.cutMp3UsingWeekly = function(audioRoot, dataRoot, callback){
