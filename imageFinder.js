@@ -12,7 +12,14 @@ function ImageFinder(gApiKey, gCX, imageDir){
 }
 
 ImageFinder.prototype.findImageUrl = function(query){
+	console.log("finding image");
 	return new Promise((resolve, reject) => {
+		resolve({
+			query: query,
+			url: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Mikazuki.jpg/220px-Mikazuki.jpg"
+		});
+		return;
+
 		got("https://www.googleapis.com/customsearch/v1?" +
 			this.buildQuery(query), {json: true})
 		.then(res => {
@@ -20,11 +27,15 @@ ImageFinder.prototype.findImageUrl = function(query){
 				//we got a result
 				let result = {query: query, url: res.body.items[0].link};
 				console.log(result);
-				return resolve(result);
+				resolve(result);
 			}
 			else {
-				return reject("no results found");
+				reject("no results found");
 			}
+		}).
+		catch((e) => {
+			console.log("BAD BAD");
+			console.log(e);
 		});
 	});
 }
@@ -42,7 +53,7 @@ ImageFinder.prototype.buildQuery = function buildQuery(query){
 ImageFinder.prototype.downloadImage = function(queryRes){
 	let query = queryRes.query;
 	let url = queryRes.url;
-	let filename = query + url.substring(url.lastIndexOf("."), url.lastIndexOf(".") + 3);
+	let filename = query.replace("/", "") + url.substring(url.lastIndexOf("."), url.lastIndexOf(".") + 4);
 	got.stream(url).pipe(fs.createWriteStream(path.join(this.imageDir, filename)));
 };
 
@@ -62,20 +73,25 @@ ImageFinder.prototype.getAllImgs = function(dataRoot){
 	}
 	catch(e){
 		console.log("could not find weekly");
+		return;
 	}
-
-	weekly.map(val => {
-		return this.genImg.bind(this, val.artist, val.title);
-	})
-	.reduce((p, fn) => {
-		console.log(p);
-		return p.then(fn);
-	}, Promise.resolve);
+	
+	let p = Promise.resolve();
+	let week;
+	
+	for(let idx in weekly){
+		let week = weekly[idx];
+		p = p.then(() => {
+			return this.genImg(week.artist, week.title);
+		});
+	}
+	
+	return p;
 };
 
 let imgf = new ImageFinder("AIzaSyDFKQ5C0CXgAD1TjxGVqmfA25Mp8QCXlME",
-	"007452572455457586091:ujqb96chqqm", "/home/neilson/Pictures/test");
+	"007452572455457586091:ujqb96chqqm", "/Users/neilson/Pictures/test");
 
-imgf.genImg("ayaka", "why");
+//imgf.genImg("ayaka", "mikazuki");
 
-// imgf.getAllImgs("/home/neilson/onsendb");
+imgf.getAllImgs("/Users/neilson/Projects/hello/onsendb");
