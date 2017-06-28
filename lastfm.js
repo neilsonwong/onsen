@@ -44,7 +44,30 @@ Lastfm.grabWeeks = function (callback) {
     });
 };
 
-Lastfm.getTracks = function (to, from, callback) {
+Lastfm.getLovedTracks = function(callback) {
+    request.post("http://ws.audioscrobbler.com/2.0/", {
+        form: {
+            method: 'user.getlovedtracks',
+            user: Lastfm.user,
+            api_key: Lastfm.apiKey,
+            format: "json"
+        }
+    }, function (err, res, body) {
+        if (err) {
+            console.log(err);
+        }
+        try {
+            var data = JSON.parse(body);
+            return callback(data);
+        }
+        catch (e) {
+            console.log("get loved tracks error");
+            console.log(e);
+        }
+    });
+}
+
+Lastfm.getTracks = function(to, from, callback) {
     request.post("http://ws.audioscrobbler.com/2.0/", {
         form: {
             method: 'user.getweeklytrackchart',
@@ -141,14 +164,19 @@ Lastfm.generateFixedLastfmDb = function generateFixedLastfmDb(callback) {
             });
         },
         function done(err){
-            var songs = fixLastFmData.buildSongBook(db3);
+            Lastfm.getLovedTracks((lovedTracks) => {
+                let loved = fixLastFmData.aliasLovedTracks(lovedTracks);
+                fs.writeFileSync(path.join(Lastfm.dataDir, "loved.json"), JSON.stringify(loved, null, 2));
 
-            console.log("writing song files");
-            fs.writeFileSync(path.join(Lastfm.dataDir, "songs.json"), JSON.stringify(songs.all, null, 2));
-            fs.writeFileSync(path.join(Lastfm.dataDir, "playable.json"), JSON.stringify(songs.playable, null, 2));
-            fs.writeFileSync(path.join(Lastfm.dataDir, "weekly.json"), JSON.stringify(songs.weeklyTop, null, 2));
+                var songs = fixLastFmData.buildSongBook(db3);
 
-            return callback(true);
+                console.log("writing song files");
+                fs.writeFileSync(path.join(Lastfm.dataDir, "songs.json"), JSON.stringify(songs.all, null, 2));
+                fs.writeFileSync(path.join(Lastfm.dataDir, "playable.json"), JSON.stringify(songs.playable, null, 2));
+                fs.writeFileSync(path.join(Lastfm.dataDir, "weekly.json"), JSON.stringify(songs.weeklyTop, null, 2));
+
+                return callback(true);
+            });
         });
     });
 }

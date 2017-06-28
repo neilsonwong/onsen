@@ -256,6 +256,14 @@ AudioHelper.mergeMetadata = function(audioRoot, dataRoot, callback){
     }
     // console.log(colours)
 
+    let loved = {};
+    try {
+        loved = require(path.join(dataRoot, "loved"));
+    }
+    catch(e){
+        console.log(e);
+    }
+
     let i = 0;
     let urlRoot = "/mp3/";
     for(; i < weekly.length; ++i){
@@ -269,6 +277,7 @@ AudioHelper.mergeMetadata = function(audioRoot, dataRoot, callback){
         weekly[i].duration = calculateDuration(weekly[i]);
         filename = sf.substring(sf.lastIndexOf("/")+1).toLowerCase()
         weekly[i].colour = colours[filename] || "";
+        weekly[i].loved = (loved[weekly[i].artist] !== undefined && loved[weekly[i].artist][weekly[i].title] !== undefined); 
     }
 
     //write new playable

@@ -159,4 +159,23 @@ LastFmDataFixer.buildSongBook = function buildSongBook(db3){
     return {all: songs, playable: playable, weeklyTop: weeklyChart};
 }
 
+LastFmDataFixer.aliasLovedTracks = function aliasLoved(rawLoved){
+    let loved = {};
+    let tracks = rawLoved.lovedtracks.track;
+
+    let i = 0;
+    let aliasTemp, artist, title;
+    for (; i < tracks.length; ++i){
+        aliasTemp = alias.get(tracks[i].artist.name, tracks[i].name);
+        artist = aliasTemp[0];
+        title = aliasTemp[1];
+
+        if (!loved[artist]){
+            loved[artist] = {};
+        }
+        loved[artist][title] = true;
+    }
+    return loved;
+}
+
 module.exports = LastFmDataFixer;
