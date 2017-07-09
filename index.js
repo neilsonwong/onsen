@@ -51,7 +51,7 @@ Onsen.getWeekly = function getWeekly(callback){
 		}
 		else {
 			let lastUpdated = parseInt(data);
-			if (lastUpdated < Date.now - 604800000){
+			if (lastUpdated < Date.now() - 604800000){
 				update();
 			}
 			else {
